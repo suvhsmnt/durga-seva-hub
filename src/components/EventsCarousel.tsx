@@ -1,27 +1,54 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
-import { dummyEvents } from "@/data/dummyData";
+import { useState,useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { CarouselItem } from "@/data/dummyData";
+import { fetchCarouselItems } from "@/lib/api";
 
 const EventsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const events = dummyEvents;
+  const [carousel, setCarousel] = useState<CarouselItem[]>([]);
+  const [newCarouselItem, setNewCarouselItem] = useState<Partial<CarouselItem>>({
+    id:"",
+    title: "",
+    description: "",
+    image: "",
+    link: ""
+  });
+  const { toast } = useToast();
+
+  useEffect(() => {
+      const loadCarouselItems = async () => {
+        try {
+          const data = await fetchCarouselItems();
+          setCarousel(data);
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to fetch carousel items.",
+            variant: "destructive"
+          });
+        }
+      };
+      loadCarouselItems();
+    }, []);
+  
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === events.length - 1 ? 0 : prevIndex + 1
+      prevIndex === carousel.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? events.length - 1 : prevIndex - 1
+      prevIndex === 0 ? carousel.length - 1 : prevIndex - 1
     );
   };
 
   return (
-    <section className="py-16 bg-gradient-to-b from-background to-muted/30">
+    <section id='events' className="py-16 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -39,36 +66,36 @@ const EventsCarousel = () => {
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
-              {events.map((event) => (
-                <div key={event.id} className="w-full flex-shrink-0">
+              {carousel.map((crsl) => (
+                <div key={crsl.id} className="w-full flex-shrink-0">
                   <Card className="mx-4 shadow-lg hover:shadow-divine transition-all duration-300">
                     <div className="grid md:grid-cols-2 gap-0">
                       {/* Image */}
                       <div className="relative h-64 md:h-full">
                         <img 
-                          src={event.images[0]} 
-                          alt={event.title}
+                          src={crsl.image} 
+                          alt={crsl.title}
                           className="w-full h-full object-cover rounded-l-xl"
                         />
-                        <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-medium ${
+                        {/* <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-medium ${
                           event.category === 'past' 
                             ? 'bg-secondary text-secondary-foreground' 
                             : 'bg-success text-success-foreground'
                         }`}>
                           {event.category === 'past' ? 'Completed' : 'Upcoming'}
-                        </div>
+                        </div> */}
                       </div>
 
                       {/* Content */}
                       <CardContent className="p-8 flex flex-col justify-center">
                         <h3 className="text-2xl font-bold mb-4 text-foreground">
-                          {event.title}
+                          {crsl.title}
                         </h3>
                         <p className="text-muted-foreground mb-6 leading-relaxed">
-                          {event.description}
+                          {crsl.description}
                         </p>
                         
-                        <div className="space-y-3 mb-6">
+                        {/* <div className="space-y-3 mb-6">
                           <div className="flex items-center text-muted-foreground">
                             <Calendar className="w-4 h-4 mr-3 text-primary" />
                             <span>{new Date(event.date).toLocaleDateString('en-IN', {
@@ -87,7 +114,7 @@ const EventsCarousel = () => {
                               <span>{event.beneficiaries} people benefited</span>
                             </div>
                           )}
-                        </div>
+                        </div> */}
 
                         <Button variant="divine" className="w-fit">
                           Learn More
@@ -120,7 +147,7 @@ const EventsCarousel = () => {
 
           {/* Dots Indicator */}
           <div className="flex justify-center mt-8 space-x-2">
-            {events.map((_, index) => (
+            {carousel.map((_, index) => (
               <button
                 key={index}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${

@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center">
                 <img 
-                  src="/lovable-uploads/82ecd40d-b28b-474d-9a6d-f6a78609306d.png" 
+                  src="/image/82ecd40d-b28b-474d-9a6d-f6a78609306d.png" 
                   alt="Trust Logo" 
                   className="w-6 h-6 object-contain"
                 />

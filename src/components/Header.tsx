@@ -1,22 +1,44 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X, Users, Calendar, Settings } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleScrollOrNavigate = (targetId: string, route: string) => {
+    if (location.pathname === "/" || location.pathname === "/home") {
+      const el = document.getElementById(targetId);
+      if (el) {
+        const headerHeight = 70; // Adjust based on header height (py-4, border, shadow)
+        const offsetTop = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: "smooth",
+        });
+      }
+    } else {
+      navigate(route); // Navigate to route, scrolling handled by Index
+    }
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-md border-b border-border shadow-soft">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo and Trust Name */}
-          <div className="flex items-center space-x-4" onClick={() => navigate('/')} role="button">
+          <div
+            className="flex items-center space-x-4"
+            onClick={() => handleScrollOrNavigate("home", "/")}
+            role="button"
+          >
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center shadow-divine">
-              <img 
-                src="/lovable-uploads/82ecd40d-b28b-474d-9a6d-f6a78609306d.png" 
-                alt="Trust Logo" 
+              <img
+                src="/image/82ecd40d-b28b-474d-9a6d-f6a78609306d.png"
+                alt="Trust Logo"
                 className="w-8 h-8 object-contain"
               />
             </div>
@@ -32,19 +54,19 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Button variant="ghost" onClick={() => navigate('/')}>
+            <Button variant="ghost" onClick={() => handleScrollOrNavigate("home", "/")}>
               Home
             </Button>
-            <Button variant="ghost" onClick={() => navigate('/about')}>
+            <Button variant="ghost" onClick={() => handleScrollOrNavigate("about", "/about")}>
               About Us
             </Button>
-            <Button variant="ghost" onClick={() => navigate('/events')}>
+            <Button variant="ghost" onClick={() => handleScrollOrNavigate("events", "/events")}>
               Events
             </Button>
-            <Button variant="ghost" onClick={() => navigate('/members')}>
+            <Button variant="ghost" onClick={() => handleScrollOrNavigate("members", "/members")}>
               Members
             </Button>
-            <Button variant="divine" onClick={() => navigate('/admin')}>
+            <Button variant="divine" onClick={() => navigate("/admin")}>
               <Settings className="w-4 h-4" />
               Admin
             </Button>
@@ -65,36 +87,44 @@ const Header = () => {
         {isMenuOpen && (
           <nav className="md:hidden mt-4 py-4 border-t border-border">
             <div className="flex flex-col space-y-3">
-              <Button variant="ghost" className="justify-start" onClick={() => {
-                navigate('/');
-                setIsMenuOpen(false);
-              }}>
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => handleScrollOrNavigate("home", "/")}
+              >
                 Home
               </Button>
-              <Button variant="ghost" className="justify-start" onClick={() => {
-                navigate('/about');
-                setIsMenuOpen(false);
-              }}>
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => handleScrollOrNavigate("about", "/about")}
+              >
                 About Us
               </Button>
-              <Button variant="ghost" className="justify-start" onClick={() => {
-                navigate('/events');
-                setIsMenuOpen(false);
-              }}>
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => handleScrollOrNavigate("events", "/events")}
+              >
                 <Calendar className="w-4 h-4" />
                 Events
               </Button>
-              <Button variant="ghost" className="justify-start" onClick={() => {
-                navigate('/members');
-                setIsMenuOpen(false);
-              }}>
+              <Button
+                variant="ghost"
+                className="justify-start"
+                onClick={() => handleScrollOrNavigate("members", "/members")}
+              >
                 <Users className="w-4 h-4" />
                 Members
               </Button>
-              <Button variant="divine" className="justify-start" onClick={() => {
-                navigate('/admin');
-                setIsMenuOpen(false);
-              }}>
+              <Button
+                variant="divine"
+                className="justify-start"
+                onClick={() => {
+                  navigate("/admin");
+                  setIsMenuOpen(false);
+                }}
+              >
                 <Settings className="w-4 h-4" />
                 Admin Panel
               </Button>
